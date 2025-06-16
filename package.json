@@ -1,0 +1,24 @@
+{
+  "name": "shopapp_online_backend",
+  "version": "1.0.0",
+  "description": "This is for training purpose",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DinhTheDanh/ShopApp.git"
+  },
+  "author": "Dinh The Danh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DinhTheDanh/ShopApp/issues"
+  },
+  "homepage": "https://github.com/DinhTheDanh/ShopApp#readme",
+  "dependencies": {
+    "mysql2": "^3.14.1",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.3"
+  }
+}
