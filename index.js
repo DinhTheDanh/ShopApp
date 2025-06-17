@@ -1,21 +1,16 @@
-console.log("hello");
-/* npx sequelize-cli model:generate --name User --attributes email:string,password:string,name:string,role:integer,avatar:string,phont:integer,created_at:date,updated_at:date
-npx sequelize-cli model:generate --name Category --attributes name:string,image:text
-npx sequelize-cli model:generate --name Brand --attributes name:string,image:text
-npx sequelize-cli model:generate --name News --attributes title:string,image:text,content:text
-npx sequelize-cli model:generate --name Banner --attributes name:string,image:text,status:integer
+const express = require("express");
+const app = express();
+require("dotenv").config();
+const port = process.env.PORT ?? 3000;
+const route = require("./routes/index");
 
+app.use(express.json());
+express.urlencoded({
+  extended: true,
+});
 
-npx sequelize-cli model:generate --name Order --attributes user_id:integer,status:integer,note:text,total:integer
-npx sequelize-cli model:generate --name Product --attributes name:string,image:text,price:integer,oldprice:integer,description:text,specification:text,buyturn:integer,quanity:integer,brand_id:integer,category_id:integer
+route(app);
 
-
-npx sequelize-cli model:generate --name News_detail --attributes product_id:integer,news_id:integer
-npx sequelize-cli model:generate --name Banner_detail --attributes product_id:integer,banner_id:integer
-
-npx sequelize-cli model:generate --name Order_detail --attributes product_id:integer,order_id:integer,price:integer,quanity:integer
-
-npx sequelize-cli model:generate --name Feedback --attributes product_id:integer,user_id:integer,star:integer,content:text
-
-
-*/
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});

@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "This is for training purpose",
   "main": "index.js",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
+    "start": "nodemon --inspect --exec babel-node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,8 +21,18 @@
   },
   "homepage": "https://github.com/DinhTheDanh/ShopApp#readme",
   "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
     "mysql2": "^3.14.1",
+    "nodemon": "^3.1.10",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.27.2",
+    "@babel/core": "^7.27.4",
+    "@babel/node": "^7.27.1",
+    "@babel/preset-env": "^7.27.2"
   }
 }
