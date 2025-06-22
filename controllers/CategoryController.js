@@ -1,23 +1,54 @@
 const Sequelize = require("sequelize");
 const db = require("../models/index");
+const { Op } = Sequelize;
+
 class CategoryController {
-  async getCategory(req, res) {
-    res.status(200).json({ message: "Lấy thành công" });
+  async getCategories(req, res) {
+    const { search = "", page = 1 } = req.query;
+    const pageSize = 5;
+    const offset = (page - 1) * pageSize;
+
+    let whereClause = {};
+    if (search.trim() !== "") {
+      whereClause = {
+        name: { [Op.like]: `%${search}%` },
+      };
+    }
+
+    const [categories, totalCategories] = await Promise.all([
+      db.Category.findAll({
+        where: whereClause,
+        limit: pageSize,
+        offset: offset,
+      }),
+      db.Category.count({
+        where: whereClause,
+      }),
+    ]);
+
+    res.status(200).json({
+      message: "Lấy danh sách danh mục thành công",
+      data: categories,
+      currentPage: parseInt(page, 10),
+      totalPages: Math.ceil(totalCategories / pageSize),
+      totalCategories,
+    });
   }
   async getCategoryById(req, res) {
-    res.status(200).json({ message: "Lấy thành công ID " });
+    const categoryId = req.params.id;
+    const category = await db.Category.findByPk(categoryId);
+    if (!category) {
+      res.status(404).json({ message: "Danh mục không tìm thấy" });
+    }
+    res
+      .status(200)
+      .json({ message: "Lấy thành công ID danh mục", data: category });
   }
   async insertCategory(req, res) {
-    try {
-      const category = await db.Category.create(req.body);
-      res
-        .status(201)
-        .json({ message: "Thêm category thành công", data: category });
-    } catch (err) {
-      res
-        .status(500)
-        .json({ message: "Lỗi khi thêm category", errors: err.message });
-    }
+    const category = await db.Category.create(req.body);
+    res
+      .status(201)
+      .json({ message: "Thêm category thành công", data: category });
   }
   async deleteCategory(req, res) {
     res.status(200).json({ message: "Xoá thành công" });
