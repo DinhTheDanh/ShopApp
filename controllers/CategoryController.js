@@ -51,9 +51,21 @@ class CategoryController {
       .json({ message: "Thêm category thành công", data: category });
   }
   async deleteCategory(req, res) {
+    const { id } = req.params;
+    const deleted = await db.Category.destroy({ where: { id } });
+    if (!deleted) {
+      res.status(404).json({ message: "Danh mục không tìm thấy" });
+    }
     res.status(200).json({ message: "Xoá thành công" });
   }
   async updateCategory(req, res) {
+    const { id } = req.params;
+    const updateCategory = await db.Category.update(req.body, {
+      where: { id },
+    });
+    if (!updateCategory) {
+      res.status(404).json({ message: "Danh mục không tìm thấy" });
+    }
     res.status(200).json({ message: "Sửa thành công" });
   }
 }

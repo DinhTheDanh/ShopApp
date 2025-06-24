@@ -10,9 +10,12 @@ router.post(
   "/insert-category",
   asyncHandler(CategoryController.insertCategory)
 );
-router.put("/update-category", asyncHandler(CategoryController.updateCategory));
+router.put(
+  "/update-category/:id",
+  asyncHandler(CategoryController.updateCategory)
+);
 router.delete(
-  "/delete-category",
+  "/delete-category/:id",
   asyncHandler(CategoryController.deleteCategory)
 );
 

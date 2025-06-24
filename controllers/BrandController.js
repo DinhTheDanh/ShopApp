@@ -52,11 +52,23 @@ class BrandController {
   }
 
   async deleteBrand(req, res) {
-    res.status(200).json({ message: "Xoá brand thành công" });
+    const { id } = req.params;
+    const deleted = await db.Brand.destroy({ where: { id } });
+    if (!deleted) {
+      res.status(404).json({ message: "Brand không tìm thấy" });
+    }
+    res.status(200).json({ message: "Xoá thành công" });
   }
 
   async updateBrand(req, res) {
-    res.status(200).json({ message: "Cập nhật brand thành công" });
+    const { id } = req.params;
+    const updateBrand = await db.Brand.update(req.body, {
+      where: { id },
+    });
+    if (!updateBrand) {
+      res.status(404).json({ message: "Brand không tìm thấy" });
+    }
+    res.status(200).json({ message: "Sửa thành công" });
   }
 }
 

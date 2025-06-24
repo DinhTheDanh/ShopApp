@@ -47,13 +47,31 @@ class ProductController {
       .json({ message: "Lấy thành công ID sản phẩm", data: product });
   }
   async insertProduct(req, res) {
+    const userId = req.body.user_id;
+
+    const user = await db.User.findByPk(userId);
+    if (!user) {
+      res.status(404).json({ message: "Ngươi dùng không tồn tại" });
+    }
     const product = await db.Product.create(req.body);
     res.status(201).json({ message: "Thêm mới thành công", data: product });
   }
   async deleteProduct(req, res) {
+    const productId = req.params.id;
+    const deleted = await db.Product.destroy({ where: { id: productId } });
+    if (!deleted) {
+      res.status(404).json({ message: "Sản phẩm không tìm thấy" });
+    }
     res.status(200).json({ message: "Xoá thành công" });
   }
   async updateProduct(req, res) {
+    const { id } = req.params;
+    const updateProduct = await db.Product.update(req.body, {
+      where: { id },
+    });
+    if (!updateProduct) {
+      res.status(404).json({ message: "Sản phẩm không tìm thấy" });
+    }
     res.status(200).json({ message: "Sửa thành công" });
   }
 }
