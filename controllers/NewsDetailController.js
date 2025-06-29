@@ -5,27 +5,17 @@ const { Op } = Sequelize;
 class NewsDetailController {
   // GET /news-details?search=...&page=1
   async getNewsDetails(req, res) {
-    const { search = "", page = 1 } = req.query;
+    const { page = 1 } = req.query;
     const pageSize = 5;
     const offset = (page - 1) * pageSize;
 
-    let whereClause = {};
-    if (search.trim() !== "") {
-      whereClause = {
-        [Op.or]: [
-          { productName: { [Op.like]: `%${search}%` } }, // tuỳ schema
-          // { newsId: { [Op.like]: `%${search}%` } }, // nếu muốn
-        ],
-      };
-    }
-
     const [details, totalDetails] = await Promise.all([
       db.News_detail.findAll({
-        where: whereClause,
         limit: pageSize,
         offset,
+        include: [{ model: db.News }, { model: db.Product }],
       }),
-      db.News_detail.count({ where: whereClause }),
+      db.News_detail.count(),
     ]);
 
     res.status(200).json({
@@ -40,7 +30,9 @@ class NewsDetailController {
   // GET /news-details/:id
   async getNewsDetailById(req, res) {
     const { id } = req.params;
-    const detail = await db.News_detail.findByPk(id);
+    const detail = await db.News_detail.findByPk(id, {
+      include: [{ model: db.News }, { model: db.Product }],
+    });
 
     if (!detail) {
       return res
@@ -53,12 +45,55 @@ class NewsDetailController {
       data: detail,
     });
   }
+  // POST /insert-new_details
+  async insertNewDetails(req, res) {
+    const { product_id, news_id } = req.body;
+    const existingProduct = await db.Product.findByPk(product_id);
+    const existingNews = await db.News.findByPk(news_id);
+    if (!existingProduct || !existingNews) {
+      res.status(404).json({
+        message: "Không tìm thấy sản phẩm hoặc tin tức",
+      });
+    }
+    const existingNewsDetail = await db.News_detail.findOne({
+      where: { product_id, news_id },
+    });
+    if (existingNewsDetail) {
+      res.status(409).json({
+        message: "Đã tồn tại cặp sản phảm và tin tức",
+      });
+    }
+    const newDetail = await db.News_detail.create({ product_id, news_id });
+    res.status(200).json({
+      message: "Thêm mới chi tiết tin tức thành công",
+      data: newDetail,
+    });
+  }
   // PUT /news-details/:id
   async updateNewsDetail(req, res) {
     const { id } = req.params;
-    const [updated] = await db.News_detail.update(req.body, {
-      where: { id },
+    const { product_id, news_id } = req.body;
+
+    const existingDuplicate = await db.News_detail.findOne({
+      where: {
+        product_id,
+        news_id,
+        id: { [Sequelize.Op.ne]: id },
+      },
     });
+
+    if (existingDuplicate) {
+      return res.status(409).json({
+        message:
+          "Mối quan hệ giữa sản phẩm và tin tức đã tồn tại trong bản ghi",
+      });
+    }
+    const updated = await db.News_detail.update(
+      { product_id, news_id },
+      {
+        where: { id },
+      }
+    );
 
     if (updated === 0) {
       return res

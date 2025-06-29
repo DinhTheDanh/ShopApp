@@ -123,13 +123,30 @@ class NewsController {
   // Xoá tin tức
   async deleteNews(req, res) {
     const { id } = req.params;
-    const deleted = await db.News.destroy({ where: { id } });
+    const transaction = await db.sequelize.transaction();
 
-    if (!deleted) {
-      return res.status(404).json({ message: "Không tìm thấy tin tức để xoá" });
+    try {
+      await db.News_detail.destroy({
+        where: { news_id: id },
+        transaction,
+      });
+      const deleted = await db.News.destroy({ where: { id }, transaction });
+
+      if (!deleted) {
+        await transaction.rollback();
+        return res
+          .status(404)
+          .json({ message: "Không tìm thấy tin tức để xoá" });
+      } else {
+        await transaction.commit();
+        res.status(200).json({ message: "Xoá tin tức thành công" });
+      }
+    } catch (err) {
+      await transaction.rollback();
+      return res
+        .status(500)
+        .json({ message: "Lỗi khi xoá bài báo", error: err.message });
     }
-
-    res.status(200).json({ message: "Xoá tin tức thành công" });
   }
 }
 

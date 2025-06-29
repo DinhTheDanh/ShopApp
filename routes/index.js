@@ -6,6 +6,7 @@ const orderDetailRouter = require("./orderDetails");
 const newsDetailRouter = require("./newsDetails");
 const userRouter = require("./users");
 const newRouter = require("./news");
+const healthCheckRouter = require("./healthcheck");
 
 function route(app) {
   app.use("/api/products", productRouter);
@@ -16,6 +17,7 @@ function route(app) {
   app.use("/api/orders", orderRouter);
   app.use("/api/order-details", orderDetailRouter);
   app.use("/api/news-details", newsDetailRouter);
+  app.use("/api/healthcheck", healthCheckRouter);
 }
 
 module.exports = route;
